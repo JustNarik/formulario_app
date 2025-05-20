@@ -3,7 +3,7 @@
 $host = "tcp:erikservidor.database.windows.net,1433";
 $db = "erickserver01";
 $user = "erik";
-$pass = "{your_password_here}";
+$pass = "LovingYouIsEasy01";
 
 try {
     $conn = new PDO("sqlsrv:server=$host;Database=$db", $user, $pass);
