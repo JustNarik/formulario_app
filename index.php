@@ -1,7 +1,7 @@
 <?php
 // === Conexión a la base de datos (SQL Server usando PDO) ===
 $host = "tcp:erikservidor.database.windows.net,1433";
-$db = "erickserver01";
+$db = "erikservidor";
 $user = "erik";
 $pass = "LovingYouIsEasy01";
 
