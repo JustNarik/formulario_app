@@ -5,7 +5,7 @@ $db = "formulario_app";
 $user = "erik";
 $pass = "LovingYouIsEasy01";
 
-// Intentamos conectar a la base de datos usando PDO
+// Intentamos conectar a la base de datos usando PDO si
 try {
     $conn = new PDO("sqlsrv:server=$host;Database=$db", $user, $pass);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
