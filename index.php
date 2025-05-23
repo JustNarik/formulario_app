@@ -1,10 +1,11 @@
 <?php
-// === Conexión a la base de datos (SQL Server usando PDO) ===
+// === Configuración de conexión a la base de datos ===
 $host = "tcp:erikservidor.database.windows.net,1433";
 $db = "formulario_app";
 $user = "erik";
 $pass = "LovingYouIsEasy01";
 
+// Intentamos conectar a la base de datos usando PDO
 try {
     $conn = new PDO("sqlsrv:server=$host;Database=$db", $user, $pass);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -17,6 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $nombre = trim($_POST["nombre"] ?? '');
     $correo = trim($_POST["correo"] ?? '');
 
+    // Validamos si los campos están completos antes de insertar
     if ($nombre !== '' && $correo !== '') {
         $stmt = $conn->prepare("INSERT INTO usuarios (nombre, correo) VALUES (?, ?)");
         $stmt->execute([$nombre, $correo]);
@@ -53,6 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </thead>
         <tbody>
             <?php
+            // Consultamos los usuarios registrados
             try {
                 $query = $conn->query("SELECT id, nombre, correo FROM usuarios");
                 $usuarios = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -72,7 +75,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 echo "<tr><td colspan='3'>Error al consultar los datos.</td></tr>";
             }
 
-            $conn = null; // Cerrar conexión
+            // Cerrar conexión al final
+            $conn = null;
             ?>
         </tbody>
     </table>
