@@ -2,7 +2,7 @@
 // === Configuración de conexión a la base de datos SII ===
 $host = "tcp:erikservidor.database.windows.net,1433";
 $db = "formulario_app";
-$user = "erik";
+$user = "erikservidor";
 $pass = "LovingYouIsEasy01";
 
 // Intentamos conectar a la base de datos usando PDO
