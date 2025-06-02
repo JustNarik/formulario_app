@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Correo</th>
+                <th>Correo Electronico</th>
             </tr>
         </thead>
         <tbody>
