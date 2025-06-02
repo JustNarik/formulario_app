@@ -14,31 +14,14 @@ try {
 }
 
 // === Procesamiento del formulario ===
-$error = '';
-
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Obtener valores sin espacios
-    $nombreCrudo = trim($_POST["nombre"] ?? '');
-    $correoCrudo = trim($_POST["correo"] ?? '');
+    $nombre = trim($_POST["nombre"] ?? '');
+    $correo = trim($_POST["correo"] ?? '');
 
-    // Quitar etiquetas HTML
-    $nombre = strip_tags($nombreCrudo);
-
-    // Eliminar caracteres no alfanuméricos ni letras acentuadas ni espacios
-    $nombre = preg_replace("/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/u", "", $nombre);
-
-    // Sanear el correo
-    $correo = filter_var($correoCrudo, FILTER_SANITIZE_EMAIL);
-
-    // Bloquear palabras peligrosas (inyección de scripts)
-    if (preg_match('/<script|alert|onerror|onload|<|>/', $nombre)) {
-        $error = "Contenido no permitido en el campo nombre.";
-    } elseif ($nombre !== '' && $correo !== '') {
-        // Insertar si todo es válido
+    // Validamos si los campos están completos antes de insertar
+    if ($nombre !== '' && $correo !== '') {
         $stmt = $conn->prepare("INSERT INTO usuarios (nombre, correo) VALUES (?, ?)");
         $stmt->execute([$nombre, $correo]);
-    } else {
-        $error = "Por favor completa todos los campos correctamente.";
     }
 }
 ?>
@@ -51,11 +34,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body>
     <h2>Formulario de Registro</h2>
-
-    <?php if ($error): ?>
-        <p style="color:red;"><?php echo htmlspecialchars($error); ?></p>
-    <?php endif; ?>
-
     <form method="POST" action="">
         <label for="nombre">Nombre:</label><br>
         <input type="text" id="nombre" name="nombre" required><br><br>
@@ -72,12 +50,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
-                <th>Correo Electronico</th>
+                <th>Correo</th>
             </tr>
         </thead>
         <tbody>
             <?php
-            // Consultar usuarios registrados
+            // Consultamos los usuarios registrados
             try {
                 $query = $conn->query("SELECT id, nombre, correo FROM usuarios");
                 $usuarios = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -85,9 +63,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($usuarios) {
                     foreach ($usuarios as $usuario) {
                         echo "<tr>
-                                <td>" . htmlspecialchars($usuario['id']) . "</td>
-                                <td>" . htmlspecialchars($usuario['nombre']) . "</td>
-                                <td>" . htmlspecialchars($usuario['correo']) . "</td>
+                                <td>{$usuario['id']}</td>
+                                <td>{$usuario['nombre']}</td>
+                                <td>{$usuario['correo']}</td>
                               </tr>";
                     }
                 } else {
@@ -97,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 echo "<tr><td colspan='3'>Error al consultar los datos.</td></tr>";
             }
 
-            // Cerrar conexión
+            // Cerrar conexión al final
             $conn = null;
             ?>
         </tbody>
