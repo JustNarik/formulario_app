@@ -1,5 +1,5 @@
 <?php
-// === Configuración de conexión a la base de datos ===
+// === Configuración de conexión a la base de datos SII ===
 $host = "tcp:erikservidor.database.windows.net,1433";
 $db = "formulario_app";
 $user = "erikservidor";
@@ -15,8 +15,9 @@ try {
 
 // === Procesamiento del formulario ===
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $nombre = trim($_POST["nombre"] ?? '');
-    $correo = trim($_POST["correo"] ?? '');
+    // Sanear la entrada: eliminar etiquetas HTML y espacios
+    $nombre = strip_tags(trim($_POST["nombre"] ?? ''));
+    $correo = filter_var(trim($_POST["correo"] ?? ''), FILTER_SANITIZE_EMAIL);
 
     // Validamos si los campos están completos antes de insertar
     if ($nombre !== '' && $correo !== '') {
@@ -63,9 +64,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($usuarios) {
                     foreach ($usuarios as $usuario) {
                         echo "<tr>
-                                <td>{$usuario['id']}</td>
-                                <td>{$usuario['nombre']}</td>
-                                <td>{$usuario['correo']}</td>
+                                <td>" . htmlspecialchars($usuario['id']) . "</td>
+                                <td>" . htmlspecialchars($usuario['nombre']) . "</td>
+                                <td>" . htmlspecialchars($usuario['correo']) . "</td>
                               </tr>";
                     }
                 } else {
