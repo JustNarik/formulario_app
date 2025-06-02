@@ -15,11 +15,21 @@ try {
 
 // === Procesamiento del formulario ===
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Sanear la entrada: eliminar etiquetas HTML y espacios
-    $nombre = strip_tags(trim($_POST["nombre"] ?? ''));
-    $correo = filter_var(trim($_POST["correo"] ?? ''), FILTER_SANITIZE_EMAIL);
+    // Obtener los valores en bruto
+    $nombreCrudo = trim($_POST["nombre"] ?? '');
+    $correoCrudo = trim($_POST["correo"] ?? '');
 
-    // Validamos si los campos están completos antes de insertar
+    // Sanear los valores
+    // Eliminar etiquetas HTML
+    $nombre = strip_tags($nombreCrudo);
+
+    // Opcional: permitir solo letras, números y espacios (más estricto)
+    $nombre = preg_replace("/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/u", "", $nombre);
+
+    // Sanear el correo
+    $correo = filter_var($correoCrudo, FILTER_SANITIZE_EMAIL);
+
+    // Validar que los campos no estén vacíos
     if ($nombre !== '' && $correo !== '') {
         $stmt = $conn->prepare("INSERT INTO usuarios (nombre, correo) VALUES (?, ?)");
         $stmt->execute([$nombre, $correo]);
