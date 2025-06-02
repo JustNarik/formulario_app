@@ -1,5 +1,5 @@
 <?php
-// === Configuración de conexión a la base de datos SIIIIIiii ===
+// === Configuración de conexión a la base de datos ===
 $host = "tcp:erikservidor.database.windows.net,1433";
 $db = "formulario_app";
 $user = "erikservidor";
