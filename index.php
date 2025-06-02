@@ -63,9 +63,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 if ($usuarios) {
                     foreach ($usuarios as $usuario) {
                         echo "<tr>
-                                <td>{$usuario['id']}</td>
-                                <td>{$usuario['nombre']}</td>
-                                <td>{$usuario['correo']}</td>
+                                <td>" . htmlspecialchars($usuario['id']) . "</td>
+                                <td>" . htmlspecialchars($usuario['nombre']) . "</td>
+                                <td>" . htmlspecialchars($usuario['correo']) . "</td>
                               </tr>";
                     }
                 } else {
