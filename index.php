@@ -14,25 +14,31 @@ try {
 }
 
 // === Procesamiento del formulario ===
+$error = '';
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Obtener los valores en bruto
+    // Obtener valores sin espacios
     $nombreCrudo = trim($_POST["nombre"] ?? '');
     $correoCrudo = trim($_POST["correo"] ?? '');
 
-    // Sanear los valores
-    // Eliminar etiquetas HTML
+    // Quitar etiquetas HTML
     $nombre = strip_tags($nombreCrudo);
 
-    // Opcional: permitir solo letras, números y espacios (más estricto)
+    // Eliminar caracteres no alfanuméricos ni letras acentuadas ni espacios
     $nombre = preg_replace("/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]/u", "", $nombre);
 
     // Sanear el correo
     $correo = filter_var($correoCrudo, FILTER_SANITIZE_EMAIL);
 
-    // Validar que los campos no estén vacíos
-    if ($nombre !== '' && $correo !== '') {
+    // Bloquear palabras peligrosas (inyección de scripts)
+    if (preg_match('/<script|alert|onerror|onload|<|>/', $nombre)) {
+        $error = "Contenido no permitido en el campo nombre.";
+    } elseif ($nombre !== '' && $correo !== '') {
+        // Insertar si todo es válido
         $stmt = $conn->prepare("INSERT INTO usuarios (nombre, correo) VALUES (?, ?)");
         $stmt->execute([$nombre, $correo]);
+    } else {
+        $error = "Por favor completa todos los campos correctamente.";
     }
 }
 ?>
@@ -45,6 +51,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body>
     <h2>Formulario de Registro</h2>
+
+    <?php if ($error): ?>
+        <p style="color:red;"><?php echo htmlspecialchars($error); ?></p>
+    <?php endif; ?>
+
     <form method="POST" action="">
         <label for="nombre">Nombre:</label><br>
         <input type="text" id="nombre" name="nombre" required><br><br>
@@ -66,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </thead>
         <tbody>
             <?php
-            // Consultamos los usuarios registrados
+            // Consultar usuarios registrados
             try {
                 $query = $conn->query("SELECT id, nombre, correo FROM usuarios");
                 $usuarios = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -86,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 echo "<tr><td colspan='3'>Error al consultar los datos.</td></tr>";
             }
 
-            // Cerrar conexión al final
+            // Cerrar conexión
             $conn = null;
             ?>
         </tbody>
